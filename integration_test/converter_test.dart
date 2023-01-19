@@ -1,21 +1,55 @@
-import 'package:direct_select/direct_select.dart';
 import 'package:f_currency_converter_activity/main.dart' as app;
 import 'package:f_currency_converter_activity/ui/widgets/one_key.dart';
-import 'package:f_currency_converter_activity/ui/widgets/selection_item.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  Future<bool> changeDropDown(
+      WidgetTester tester, String key, String currency) async {
+    await tester.tap(find.byKey(Key(key)));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    await tester.tap(find.text(currency).last);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect((tester.widget(find.byKey(Key(key))) as DropdownButton).value,
+        equals(currency));
+    await tester.pumpAndSettle();
+
+    return Future.value(true);
+  }
+
   group('ui', () {
     group('display', () {
       testWidgets('currency', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        expect(find.text('USD'), findsNWidgets(2));
-        expect(find.text('COP'), findsNWidgets(2));
-        expect(find.byType(DirectSelect), findsNWidgets(2));
+        expect(
+            (tester.widget(find.byKey(const Key('DropdownButton1')))
+                    as DropdownButton)
+                .value,
+            equals('USD'));
+
+        expect(
+            (tester.widget(find.byKey(const Key('TextCurrency1'))) as Text)
+                .data,
+            equals('USD'));
+
+        expect(
+            (tester.widget(find.byKey(const Key('DropdownButton2')))
+                    as DropdownButton)
+                .value,
+            equals('COP'));
+
+        expect(
+            (tester.widget(find.byKey(const Key('TextCurrency2'))) as Text)
+                .data,
+            equals('COP'));
       });
       testWidgets('values', (tester) async {
         app.main();
@@ -48,17 +82,17 @@ void main() {
       testWidgets('10', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-        expect(target, findsOneWidget);
-        await tester.timedDrag(
-            target, const Offset(0, -36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
+
+        await changeDropDown(tester, 'DropdownButton1', 'USD');
+
+        await changeDropDown(tester, 'DropdownButton2', 'USD');
+
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 0));
-        await tester.pumpAndSettle();
+
+        await tester.pump(const Duration(seconds: 3));
         expect(find.text('10'), findsOneWidget);
         expect(find.text('10.0'), findsOneWidget);
       });
@@ -66,12 +100,8 @@ void main() {
       testWidgets('75', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-        expect(target, findsOneWidget);
-        await tester.timedDrag(
-            target, const Offset(0, -36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
+        await changeDropDown(tester, 'DropdownButton1', 'USD');
+        await changeDropDown(tester, 'DropdownButton2', 'USD');
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 7));
         await tester.tap(find.byWidgetPredicate(
@@ -84,12 +114,8 @@ void main() {
       testWidgets('135', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-        expect(target, findsOneWidget);
-        await tester.timedDrag(
-            target, const Offset(0, -36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
+        await changeDropDown(tester, 'DropdownButton1', 'USD');
+        await changeDropDown(tester, 'DropdownButton2', 'USD');
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
         await tester.tap(find.byWidgetPredicate(
@@ -146,12 +172,10 @@ void main() {
       testWidgets('10', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-        expect(target, findsOneWidget);
-        await tester.timedDrag(
-            target, const Offset(0, -72), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
+
+        await changeDropDown(tester, 'DropdownButton1', 'USD');
+        await changeDropDown(tester, 'DropdownButton2', 'EUR');
+
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
         await tester.tap(find.byWidgetPredicate(
@@ -164,11 +188,8 @@ void main() {
       testWidgets('75', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-        expect(target, findsOneWidget);
-        await tester.timedDrag(
-            target, const Offset(0, -72), const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'USD');
+        await changeDropDown(tester, 'DropdownButton2', 'EUR');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 7));
@@ -182,11 +203,8 @@ void main() {
       testWidgets('135', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-        expect(target, findsOneWidget);
-        await tester.timedDrag(
-            target, const Offset(0, -72), const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'USD');
+        await changeDropDown(tester, 'DropdownButton2', 'EUR');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -204,11 +222,8 @@ void main() {
       testWidgets('10', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        expect(source, findsOneWidget);
-        await tester.timedDrag(
-            source, const Offset(0, 36), const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'COP');
+        await changeDropDown(tester, 'DropdownButton2', 'COP');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -222,11 +237,8 @@ void main() {
       testWidgets('75', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        expect(source, findsOneWidget);
-        await tester.timedDrag(
-            source, const Offset(0, 36), const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'COP');
+        await changeDropDown(tester, 'DropdownButton2', 'COP');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 7));
@@ -240,11 +252,8 @@ void main() {
       testWidgets('135', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        expect(source, findsOneWidget);
-        await tester.timedDrag(
-            source, const Offset(0, 36), const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'COP');
+        await changeDropDown(tester, 'DropdownButton2', 'COP');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -262,19 +271,8 @@ void main() {
       testWidgets('10', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, 36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -36),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'COP');
+        await changeDropDown(tester, 'DropdownButton2', 'USD');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -288,19 +286,8 @@ void main() {
       testWidgets('75', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, 36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -36),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'COP');
+        await changeDropDown(tester, 'DropdownButton2', 'USD');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 7));
@@ -314,19 +301,8 @@ void main() {
       testWidgets('135', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, 36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -36),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'COP');
+        await changeDropDown(tester, 'DropdownButton2', 'USD');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -344,19 +320,8 @@ void main() {
       testWidgets('10', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, 36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -72),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'COP');
+        await changeDropDown(tester, 'DropdownButton2', 'EUR');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -370,19 +335,8 @@ void main() {
       testWidgets('75', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, 36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -72),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'COP');
+        await changeDropDown(tester, 'DropdownButton2', 'EUR');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 7));
@@ -396,19 +350,8 @@ void main() {
       testWidgets('135', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, 36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -72),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'COP');
+        await changeDropDown(tester, 'DropdownButton2', 'EUR');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -426,19 +369,8 @@ void main() {
       testWidgets('10', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, -36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -72),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'EUR');
+        await changeDropDown(tester, 'DropdownButton2', 'EUR');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -452,20 +384,10 @@ void main() {
       testWidgets('75', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, -36), const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'EUR');
+        await changeDropDown(tester, 'DropdownButton2', 'EUR');
         await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -72),
-            const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
+
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 7));
         await tester.tap(find.byWidgetPredicate(
@@ -478,19 +400,8 @@ void main() {
       testWidgets('135', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, -36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -72),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'EUR');
+        await changeDropDown(tester, 'DropdownButton2', 'EUR');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -508,13 +419,8 @@ void main() {
       testWidgets('10', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-
-        expect(source, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, -36), const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'EUR');
+        await changeDropDown(tester, 'DropdownButton2', 'COP');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -528,13 +434,8 @@ void main() {
       testWidgets('75', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-
-        expect(source, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, -36), const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'EUR');
+        await changeDropDown(tester, 'DropdownButton2', 'COP');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 7));
@@ -548,13 +449,8 @@ void main() {
       testWidgets('135', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-
-        expect(source, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, -36), const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'EUR');
+        await changeDropDown(tester, 'DropdownButton2', 'COP');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -572,19 +468,8 @@ void main() {
       testWidgets('10', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, -36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -36),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'EUR');
+        await changeDropDown(tester, 'DropdownButton2', 'USD');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
@@ -598,19 +483,8 @@ void main() {
       testWidgets('75', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, -36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -36),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'EUR');
+        await changeDropDown(tester, 'DropdownButton2', 'USD');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 7));
@@ -624,19 +498,8 @@ void main() {
       testWidgets('135', (tester) async {
         app.main();
         await tester.pumpAndSettle();
-        final source = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'USD');
-        final target = find.byWidgetPredicate(
-            (widget) => widget is SelectionItem && widget.title == 'COP');
-
-        expect(source, findsOneWidget);
-        expect(target, findsOneWidget);
-
-        await tester.timedDrag(
-            source, const Offset(0, -36), const Duration(milliseconds: 300));
-        await tester.pumpAndSettle();
-        await tester.timedDrag(target.last, const Offset(0, -36),
-            const Duration(milliseconds: 300));
+        await changeDropDown(tester, 'DropdownButton1', 'EUR');
+        await changeDropDown(tester, 'DropdownButton2', 'USD');
         await tester.pumpAndSettle();
         await tester.tap(find.byWidgetPredicate(
             (widget) => widget is OneKey && widget.number == 1));
