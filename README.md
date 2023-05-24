@@ -3,7 +3,8 @@
 Primera actividad
 
 Estado inicial:
-![initialState](https://github.com/FundamentosProgramacionMovil/f_currency_converter_activity/assets/4458129/d1d502f3-6b54-44dd-a7b7-8e26d157d030)
+
+<img src="https://github.com/FundamentosProgramacionMovil/f_currency_converter_activity/assets/4458129/d1d502f3-6b54-44dd-a7b7-8e26d157d030" width="300" />
 
 Estado esperado:
 https://user-images.githubusercontent.com/4458129/213565917-bdc55d0d-6474-4df0-bb87-9db8ccee8cff.mov
