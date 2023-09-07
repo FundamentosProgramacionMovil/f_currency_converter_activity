@@ -18,6 +18,7 @@ class _ConverterPageState extends State<ConverterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text('Currency converter'),
         ),
         body: Column(children: [

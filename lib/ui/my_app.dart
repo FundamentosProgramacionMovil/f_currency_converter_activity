@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
         title: 'Currency converter',
         theme: ThemeData(
           primarySwatch: Colors.grey,
+          useMaterial3: true,
         ),
         home: const ConverterPage());
   }
