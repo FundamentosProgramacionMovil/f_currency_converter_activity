@@ -1,6 +1,8 @@
 # f_currency_converter_activity
 
-Primera actividad
+Primera actividad 
+
+Se habilito en el código el uso the material 3, por lo que los colores cambian con respecto a la imágen de abajo.
 
 Estado inicial:
 
